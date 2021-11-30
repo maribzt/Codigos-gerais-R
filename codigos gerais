@@ -1,0 +1,76 @@
+##SEMPRE COMEÇAR RMARKDOWN DA SEGUINTE FORMA: 
+
+title: "Título"
+author: "Marina Bozzetto"
+date: "dd/mm/aaaa"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(echo=FALSE, error=FALSE, warning=FALSE, message=FALSE)
+```
+
+
+##Transformar tabela em excel: 
+write.table(tabela_do_R, "arquivo_a_ser_criado.csv", sep = ";", dec = ",")
+
+
+##Abrir mapa em shp
+library("rgdal")
+library("tidyverse")
+cortico <- readOGR("C:/Users/marina.bozzetto/Downloads/cortico", "cortico")
+plot(cortico)
+write.table(cortico@data , "tabela_cortico.csv" , sep = ";" , dec = ",")
+
+##Outra forma:
+library(“sf”)
+objeto <- st_read("arquivo.shp")
+objeto %>% ggplot() +  geom_sf()
+# Transformar a projeção para o CRS 4326 - Sempre que você for trabalhar com diversos dados geográficos a primeira coisa a fazer é padronizar o CRS, para que seja possível visualizar as duas camadas no mesmo mapa e para fazer operações espaciais, como o cálculo da distância.
+objeto %>% st_transform(4326) %>%
+  ggplot() +
+  geom_sf() +
+  geom_sf(data=dado_a_ser_incluido)
+Georeferenciamento
+(usar a função geocode_OSM do pacote tmaptools)
+#install.packages("tmaptools")
+library(tmaptools)
+Lugares <- tibble(ID=c(1,2),
+       Endereço=c("Av. Prof. Luciano Gualberto, 298-460 - Butantã, São Paulo, Brazil",
+                 "Av. Paulista, 1578 - Bela Vista, São Paulo, Brazil"))
+Lugares <- geocode_OSM(Lugares$Endereço, projection=4326, as.sf=T)
+
+
+
+##Verificar os valores duplicados
+library(dplyr)
+votacao_sp_municipal_2012_prefeitos1 %>% distinct(NOME_CANDIDATO,NOME_URNA_CANDIDATO,NOME_MUNICIPIO) %>% group_by(NOME_CANDIDATO, NOME_MUNICIPIO) %>% count() %>% filter(n>1)
+
+
+##Para baixar direto de um drive compartilhado
+install.packages("googlesheets4")
+library(googlesheets4)
+link <- "link da planilha"
+planilha <- read_sheet(link)
+
+##Para o R não mostrar numero em formato científico
+options(scipen=999)
+
+##Importar qualquer arquivo no R Instalando o pacote 'rio' (fonte: https://fmeireles.com/)
+# Carrega o pacote rio
+library(rio)
+# Carrega um arquivo em .csv no diretorio corrente
+#df <- import(file = "dados.csv")
+
+# Carrega um arquivo em .txt no diretorio corrente
+#df2 <- import(file = "dados.txt")
+
+# Carrega um arquivo em .dta (Stata) no diretorio corrente
+#df3 <- import(file = "dados.dta")
+
+# Carrega um arquivo em .sav (SPSS) no diretorio corrente
+#df4 <- import(file = "dados.sav")
+
+
